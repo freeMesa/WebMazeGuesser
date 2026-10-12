@@ -1,16 +1,20 @@
 
 // Found from the website: https://www.4rknova.com/blog/2026/03/01/mulberry32-rng
 function mulberry32(a){
-    a += 0x6D2B79F5; // Uses this as the contant to shift
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    return function(){
+        a += 0x6D2B79F5; // Uses this as the contant to shift
+        let t = a;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
 }
 
-function getRandomRange(min, max, seed){
-    return Math.floor(mulberry32(seed) * (max - min + 1)) + min;
+function getRandomRange(min, max, func){
+    return Math.floor(func() * (max - min + 1)) + min;
 }
+
+console.log("Here is a practice test: " + getRandomRange(20, 50, mulberry32(2552)));
 
 const wordList = ["repeat", "other", "silicone", "quantity", "campaign", "world"];
 // MAYBE: Later could add code to read in a separate file into an array
@@ -42,6 +46,8 @@ export class LogicMaze{
 
     seed = 25552;
 
+    #size;
+
     #gameNotWon = true;
 
     constructor(){
@@ -49,18 +55,22 @@ export class LogicMaze{
         // TODO: Setup the seed with Math.Random()
         let int32_min = 1 << 31;
         let int32_max = Math.pow(2, 31) - 1;
-        seed = Math.floor(Math.random() * (int32_max - int32_min + 1) + int32_min);
 
-        
+
         // TODO: Set the seed value to the generated one
+        this.seed = getRandomRange(int32_min, int32_max, Math.random);
+
         // TODO: Add all the nodes to the maze array
+        this.#size = getRandomRange(15, 20, mulberry32(this.seed));
+        let size = this.#size;
+        this.#maze = Array.from({ length: size}, () => Array.from({ length: size}, () => new LogicNode()));
+
         // TODO: Pass to the generate maze function
+        this.#generateMaze();
     }
 
     // Treat as a private member function
     #generateMaze(){ // Pass in an integer
-        // TODO: Write a for loop which adds all the Nodes to the maze array (2D)
-        // Make the size dependent on the seed between 15 and 20
 
         // TODO: Set the player position relative to the size
 

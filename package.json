@@ -1,5 +1,14 @@
 {
+  "name": "webmazeguesser",
+  "version": "1.0.0",
+  "type": "module",
+
   "devDependencies": {
     "jest": "^30.5.2"
+  },
+
+  "scripts": {
+    "test": "jest",
+    "backend": "node ./js/Backend/MazeLogic.js"
   }
 }
