@@ -28,9 +28,24 @@ export class LogicNode {
 
     letter = "";
 
-    visualized = false;
+    visualized = true;
 
     position = [-1, -1]; // [x, y]
+
+    constructor(position){
+        this.position = position;
+    }
+
+    reset(){
+        this.up = false;
+        this.down = false;
+        this.right = false;
+        this.left = false;
+
+        this.letter = "";
+
+        this.visualized = true;
+    }
 
 }
 
@@ -63,13 +78,18 @@ export class LogicMaze{
         // TODO: Add all the nodes to the maze array
         this.#size = getRandomRange(15, 20, mulberry32(this.seed));
         let size = this.#size;
-        this.#maze = Array.from({ length: size}, () => Array.from({ length: size}, () => new LogicNode()));
+        this.#maze = Array.from({ length: size}, (_, x) => Array.from({ length: size}, (_, y) => new LogicNode([x, y])));
 
+        console.log(this.#maze[size -1][size-1].position);
         // TODO: Pass to the generate maze function
         this.#generateMaze();
     }
 
-    // Treat as a private member function
+    /**
+     * Generates the maze from the current contextual seed value, and size. Utilizes
+     * the Recursive Backtracking maze generation algorithm. Will also pick the word to be
+     * guessed.
+     */
     #generateMaze(){ // Pass in an integer
 
         // TODO: Set the player position relative to the size
@@ -81,7 +101,8 @@ export class LogicMaze{
     }
 
     /**
-     * 
+     * Function to move the character. Checks the validity of the move that was
+     * input.
      * @param {boolean} x - Whether the player traveled horizontally
      * @param {boolean} y - Whether the player traveled vertically
      * @returns boolean value which tells whether an item was collected
@@ -110,6 +131,12 @@ export class LogicMaze{
         // TODO: Return true if so, otherwise return false
     }
 
+    /**
+     * Will check the guessed word with the actual word and determine if
+     * the guess can be made.
+     * @param {string} wordGuess - The string that was input to be guessed
+     * @returns boolean value of whether the guess was correct
+     */
     guess(wordGuess){
         // TODO: Call isGuessImminent to determine if the character is able to guess
         // TODO: Check the guess with the stored word
@@ -118,6 +145,10 @@ export class LogicMaze{
         // TODO: If correct return true, otherwise return false
     }
 
+    /**
+     * Will reset all the default 
+     * @param {number} seed - Integer number that defines the new seed. If null will randomly generate.
+     */
     reset(seed = null){ // Pass in an integer
         // TODO: Clear the nodes within the maze
         // TODO: Clear the word list and set the string to empty
