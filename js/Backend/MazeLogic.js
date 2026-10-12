@@ -1,5 +1,5 @@
 
-class Node {
+export class LogicNode {
 
     up = false;
     down = false;
@@ -11,7 +11,7 @@ class Node {
     visualized = false;
 }
 
-class LogicMaze{
+export class LogicMaze{
 
     maze = [];
 
@@ -39,3 +39,5 @@ class LogicMaze{
 }
 
 console.log("This is a test");
+
+export const maze = new LogicMaze();
