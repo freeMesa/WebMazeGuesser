@@ -165,7 +165,7 @@ export class LogicMaze{
                 let chosenNode = this.#maze[path.ny][path.nx];
                 chosenNode.visualized = false;
 
-                chosenNode.walls[LogicNode.directions[path.key].opposite] = false;
+                chosenNode.walls[LogicMaze.directions[path.key].opposite] = false;
                 currNode.walls[path.key] = false;
                 
                 stack.push(chosenNode);
@@ -191,19 +191,19 @@ export class LogicMaze{
 
         checkInBounds = (nx >= 0 && nx < this.#size) && (ny >= 0 && ny < this.#size);
 
-        let checkMove = false;
+        let validMove = false;
         if(checkInBounds && this.#steps === 0){
             if(direction === "RIGHT"){
-                checkMove = true;
+                validMove = true;
 
             }
-        } elif(checkInBounds){
+        } else if(checkInBounds){
 
-            checkMove = 
+            validMove = !(this.#maze[this.playerPosition[1]][this.playerPosition[0]].walls[direction]);
 
         }
 
-        if(checkMove){
+        if(validMove){
             this.#steps++;
 
             this.playerPosition = [nx, ny];
@@ -214,6 +214,8 @@ export class LogicMaze{
                 let index = this.#word.indexOf(tmpNode.letter);
 
                 this.visualizedWord[index] = tmpNode.letter;
+
+                return true;
             }
         }
 
@@ -225,15 +227,22 @@ export class LogicMaze{
     }
 
     #stageNodesForVisualization(dist){
+        let currNode = this.#maze();
+
+        if(!currNode.visualized){
+            this.#toBeVisualized.push(currNode);
+            currNode.visualized = true;
+        }
 
         if(dist > 2){
             return;
         }
 
-        let currNode = this.#maze()
         for(const [key, dir] of Object.entries(LogicMaze.directions)){
 
-            if()
+            if(!currNode.walls[key]){
+                
+            }
         }
     }
 
@@ -243,7 +252,7 @@ export class LogicMaze{
         // TODO: Determine if this position is the final node (top right corner)
         // TODO: Return true if so, otherwise return false
         let [x, y] = [this.playerPosition[0], this.playerPosition[1]];
-        if(x === this.#size - 1 && y === this.#size -1){
+        if(x === this.#size - 1 && y === 0){
             return true;
         }
 
