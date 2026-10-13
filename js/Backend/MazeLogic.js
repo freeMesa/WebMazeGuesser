@@ -21,10 +21,7 @@ const wordList = ["repeat", "other", "silicone", "quantity", "campaign", "world"
 
 export class LogicNode {
 
-    up = false;
-    down = false;
-    right = false;
-    left = false;
+    walls = {"UP": true, "DOWN": true, "LEFT": true, "RIGHT": true};
 
     letter = "";
 
@@ -37,10 +34,9 @@ export class LogicNode {
     }
 
     reset(){
-        this.up = false;
-        this.down = false;
-        this.right = false;
-        this.left = false;
+        for(const dir in walls){
+            dir = true;
+        }
 
         this.letter = "";
 
@@ -48,6 +44,8 @@ export class LogicNode {
     }
 
 }
+
+
 
 export class LogicMaze{
 
@@ -78,11 +76,11 @@ export class LogicMaze{
         // TODO: Add all the nodes to the maze array
         this.#size = getRandomRange(15, 20, mulberry32(this.seed));
         let size = this.#size;
-        this.#maze = Array.from({ length: size}, (_, x) => Array.from({ length: size}, (_, y) => new LogicNode([x, y])));
+        this.#maze = Array.from({ length: size}, (_, y) => Array.from({ length: size}, (_, x) => new LogicNode([x, y])));
 
         console.log(this.#maze[size -1][size-1].position);
         // TODO: Pass to the generate maze function
-        this.#generateMaze();
+        this.#generateGameObject();
     }
 
     /**
@@ -90,14 +88,70 @@ export class LogicMaze{
      * the Recursive Backtracking maze generation algorithm. Will also pick the word to be
      * guessed.
      */
-    #generateMaze(){ // Pass in an integer
+    #generateGameObject(){ // Pass in an integer
 
         // TODO: Set the player position relative to the size
-
+        this.playerPosition = [-1, this.#size -1];
         // TODO: Implement the recursive back tracking algorithm
-
+        this.#generateMaze();
         // TODO: Random index into the wordList to get the word
         // TODO: Set the word visual list to the number of letters
+    }
+
+    #generateMaze(){
+
+        // TODO: Use a local seed variable that you add to every time it is used to make it 
+        let rnd = mulberry32(this.seed);
+        // actually seem random.
+        let seed = this.seed;
+        let currX = getRandomRange(0, this.#size -1, rnd);
+        let currY = getRandomRange(0, this.#size -1, rnd);
+        
+        let currNode = this.#maze[currY][currX];
+        currNode.visualized = false;
+        let directions = {
+            "UP": { "shift": [0, -1], "opposite": "DOWN"}, 
+            "DOWN": { "shift": [0, 1], "opposite": "UP"}, 
+            "LEFT": { "shift": [-1, 0], "opposite": "RIGHT"}, 
+            "RIGHT": { "shift": [1, 0], "opposite": "LEFT"}
+        };
+        let stack = [currNode]
+
+        let nxtNode;
+        while(stack.length > 0){
+            let [x, y] = stack[stack.length -1].position;
+            let newDirections = [];
+
+            for(const [key, dir] of Object.entries(directions)){
+                let [dx, dy] = dir.shift;
+                let nx = x + dx, ny = y + dy;
+                
+                let isOutOfBounds = (nx < 0 || nx >= this.#size) || (ny < 0 || ny >= this.#size);
+
+                if(!isOutOfBounds){
+                    if(this.#maze[ny][nx].visualized){
+                        newDirections.push({nx, ny, key})
+                    }
+                }
+            }
+
+            if(newDirections.length > 0){
+                let index = getRandomRange(0, newDirections.length -1, rnd);
+
+                let path = newDirections[index];
+
+                let chosenNode = this.#maze[path.ny][path.nx];
+                chosenNode.visualized = false;
+
+                chosenNode.walls[directions[path.key].opposite] = false;
+                currNode.walls[path.key] = false;
+                
+                stack.push(chosenNode);
+            } else{
+                stack.pop();
+            }
+
+        }
     }
 
     /**
