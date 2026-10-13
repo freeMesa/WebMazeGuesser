@@ -30,10 +30,7 @@ export class VisualMaze{
 
 export class VisualNode{
     // Showing which directions the node is "connected"
-    up = false;
-    down = false;
-    right = false;
-    left = false;
+    walls = {"UP": true, "DOWN": true, "LEFT": true, "RIGHT": true};
 
     letter = false; // Whether the cell contains a letter
 
