@@ -202,6 +202,10 @@ export class LogicMaze{
             validMove = !(this.#maze[this.playerPosition[1]][this.playerPosition[0]].walls[direction]);
 
         }
+        
+        // TODO: Index into the nodes at the player position
+        // TODO: Check whether there was a letter at that position
+        // TODO: If there was add this to the visualized letters list and then return true
 
         if(validMove){
             this.#steps++;
@@ -209,6 +213,8 @@ export class LogicMaze{
             this.playerPosition = [nx, ny];
 
             let tmpNode = this.#maze[ny][nx];
+
+            this.#stageNodesForVisualization(tmpNode, 0);
 
             if(tmpNode.letter.length > 0){
                 let index = this.#word.indexOf(tmpNode.letter);
@@ -219,10 +225,7 @@ export class LogicMaze{
             }
         }
 
-        // TODO: Index into the nodes at the player position
-        // TODO: Check whether there was a letter at that position
-        // TODO: If there was add this to the visualized letters list and then return true
-
+        
         return false; 
     }
 
