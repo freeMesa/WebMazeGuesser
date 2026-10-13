@@ -226,8 +226,7 @@ export class LogicMaze{
         return false; 
     }
 
-    #stageNodesForVisualization(dist){
-        let currNode = this.#maze();
+    #stageNodesForVisualization(currNode, dist){
 
         if(!currNode.visualized){
             this.#toBeVisualized.push(currNode);
@@ -242,6 +241,13 @@ export class LogicMaze{
 
             if(!currNode.walls[key]){
                 
+                let [dx, dy] = dir["shift"];
+
+                dx += this.playerPosition[0];
+                dy += this.playerPosition[1];
+
+                let newNode = this.#maze[dy][dx];
+                this.#stageNodesForVisualization(newNode, dist + 1);
             }
         }
     }
