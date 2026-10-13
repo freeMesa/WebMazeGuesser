@@ -163,14 +163,12 @@ export class LogicMaze{
     /**
      * Function to move the character. Checks the validity of the move that was
      * input.
-     * @param {boolean} x - Whether the player traveled horizontally
-     * @param {boolean} y - Whether the player traveled vertically
+     * @param {number} x - The delta in the x direction. 
+     * @param {number} y - The delta in the y direction.
      * @returns boolean value which tells whether an item was collected
      */
     move(x, y){ // Pass in boolean values always
-        let tmpX = x ? this.playerPosition[0] + 1 : this.playerPosition[0];
-        let tmpY = y ? this.playerPosition[1] + 1 : this.playerPosition[1];
-
+        
         // TODO: Check if the move is valid or not
         if(validMove){
             this.playerPosition[0] = tmpX;
