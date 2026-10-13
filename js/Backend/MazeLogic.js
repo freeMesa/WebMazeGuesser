@@ -49,6 +49,15 @@ export class LogicNode {
 
 export class LogicMaze{
 
+    static directions = {
+        "UP": { "shift": [0, -1], "opposite": "DOWN"}, 
+        "DOWN": { "shift": [0, 1], "opposite": "UP"}, 
+        "LEFT": { "shift": [-1, 0], "opposite": "RIGHT"}, 
+        "RIGHT": { "shift": [1, 0], "opposite": "LEFT"}
+    };
+
+    #steps = 0;
+
     #maze; // Going to be an array of nodes (2d array)
 
     playerPosition; // [x, y]
@@ -59,11 +68,13 @@ export class LogicMaze{
 
     seed = 25552;
 
-    #randFunc;
+    #randFunc; // Used for random number generation, allows different numbers each time
 
     #size;
 
-    #gameNotWon = true;
+    #gameWon = false;
+
+    #toBeVisualized = [];
 
     constructor(){
         // TODO: Setup the seed with Math.Random()
@@ -104,6 +115,16 @@ export class LogicMaze{
         this.visualizedWord = Array.from({length: this.#word.length}, () => "");
     }
 
+    /**
+     * A getter for the steps, to allow viewing but not access to 
+     * the steps value outside the class.
+     * @returns The steps which is the number of steps that 
+     * the player has stepped.
+     */
+    getScore(){
+        return this.#steps;
+    }
+
     #generateMaze(){
 
         // TODO: Use a local seed variable that you add to every time it is used to make it 
@@ -115,12 +136,7 @@ export class LogicMaze{
         
         let currNode = this.#maze[currY][currX];
         currNode.visualized = false;
-        let directions = {
-            "UP": { "shift": [0, -1], "opposite": "DOWN"}, 
-            "DOWN": { "shift": [0, 1], "opposite": "UP"}, 
-            "LEFT": { "shift": [-1, 0], "opposite": "RIGHT"}, 
-            "RIGHT": { "shift": [1, 0], "opposite": "LEFT"}
-        };
+        
         let stack = [currNode]
 
         let nxtNode;
@@ -128,7 +144,7 @@ export class LogicMaze{
             let [x, y] = stack[stack.length -1].position;
             let newDirections = [];
 
-            for(const [key, dir] of Object.entries(directions)){
+            for(const [key, dir] of Object.entries(LogicMaze.directions)){
                 let [dx, dy] = dir.shift;
                 let nx = x + dx, ny = y + dy;
                 
@@ -149,7 +165,7 @@ export class LogicMaze{
                 let chosenNode = this.#maze[path.ny][path.nx];
                 chosenNode.visualized = false;
 
-                chosenNode.walls[directions[path.key].opposite] = false;
+                chosenNode.walls[LogicNode.directions[path.key].opposite] = false;
                 currNode.walls[path.key] = false;
                 
                 stack.push(chosenNode);
@@ -163,17 +179,42 @@ export class LogicMaze{
     /**
      * Function to move the character. Checks the validity of the move that was
      * input.
-     * @param {number} x - The delta in the x direction. 
-     * @param {number} y - The delta in the y direction.
+     * @param {string} direction - Tells the direction that the 
      * @returns boolean value which tells whether an item was collected
      */
-    move(x, y){ // Pass in boolean values always
+    move(direction){ // Pass in boolean values always
         
         // TODO: Check if the move is valid or not
-        if(validMove){
-            this.playerPosition[0] = tmpX;
-            this.playerPosition[1] = tmpY;
+        let [dx, dy] = directions[direction]["shift"];
+        
+        let [nx, ny] = [this.playerPosition[0] + dx, this.playerPosition[1] + dy];
 
+        checkInBounds = (nx >= 0 && nx < this.#size) && (ny >= 0 && ny < this.#size);
+
+        let checkMove = false;
+        if(checkInBounds && this.#steps === 0){
+            if(direction === "RIGHT"){
+                checkMove = true;
+
+            }
+        } elif(checkInBounds){
+
+            checkMove = 
+
+        }
+
+        if(checkMove){
+            this.#steps++;
+
+            this.playerPosition = [nx, ny];
+
+            let tmpNode = this.#maze[ny][nx];
+
+            if(tmpNode.letter.length > 0){
+                let index = this.#word.indexOf(tmpNode.letter);
+
+                this.visualizedWord[index] = tmpNode.letter;
+            }
         }
 
         // TODO: Index into the nodes at the player position
@@ -183,10 +224,30 @@ export class LogicMaze{
         return false; 
     }
 
+    #stageNodesForVisualization(dist){
+
+        if(dist > 2){
+            return;
+        }
+
+        let currNode = this.#maze()
+        for(const [key, dir] of Object.entries(LogicMaze.directions)){
+
+            if()
+        }
+    }
+
     isGuessImminent(){
         // TODO: Index into the player's current position
+
         // TODO: Determine if this position is the final node (top right corner)
         // TODO: Return true if so, otherwise return false
+        let [x, y] = [this.playerPosition[0], this.playerPosition[1]];
+        if(x === this.#size - 1 && y === this.#size -1){
+            return true;
+        }
+
+        return false;
     }
 
     /**
