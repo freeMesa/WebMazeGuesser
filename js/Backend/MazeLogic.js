@@ -16,14 +16,14 @@ function getRandomRange(min, max, func){
 
 console.log("Here is a practice test: " + getRandomRange(20, 50, mulberry32(2552)));
 
-const wordList = ["repeat", "other", "silicone", "quantity", "campaign", "world"];
+const wordList = ["repeat", "other", "silicone", "quantity", "campaign", "world", "civilian"];
 // MAYBE: Later could add code to read in a separate file into an array
 
 export class LogicNode {
 
     walls = {"UP": true, "DOWN": true, "LEFT": true, "RIGHT": true};
 
-    letter = "";
+    letters = [];
 
     visualized = true;
 
@@ -113,6 +113,13 @@ export class LogicMaze{
         this.#word = wordList[getRandomRange(0, wordList.length -1, this.#randFunc)];
         // TODO: Set the word visual list to the number of letters
         this.visualizedWord = Array.from({length: this.#word.length}, () => "");
+
+        for(const letter of this.#word){
+            let xPos = getRandomRange(0, this.#size -1, this.#randFunc);
+            let yPos = getRandomRange(0, this.#size -1, this.#randFunc);
+
+            this.#maze[yPos][xPos].letters.push(letter);
+        }
     }
 
     /**
@@ -216,10 +223,15 @@ export class LogicMaze{
 
             this.#stageNodesForVisualization(tmpNode, 0);
 
-            if(tmpNode.letter.length > 0){
-                let index = this.#word.indexOf(tmpNode.letter);
+            if(tmpNode.letters.length > 0){
+                
+                for(const letter of tmpNode.letters){
+                    let index = this.#word.indexOf(letter);
 
-                this.visualizedWord[index] = tmpNode.letter;
+                    this.visualizedWord[index] = letter;
+
+                }
+                this.#toBeVisualized.push(tmpNode);
 
                 return true;
             }
@@ -227,6 +239,10 @@ export class LogicMaze{
 
         
         return false; 
+    }
+
+    getNodesToVisualize(){
+        return this.#toBeVisualized;
     }
 
     #stageNodesForVisualization(currNode, dist){
@@ -320,5 +336,3 @@ export class LogicMaze{
 
 
 export const maze = new LogicMaze();
-maze.move("RIGHT");
-maze.reset();
