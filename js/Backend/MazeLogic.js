@@ -59,28 +59,32 @@ export class LogicMaze{
 
     seed = 25552;
 
+    #randFunc;
+
     #size;
 
     #gameNotWon = true;
 
     constructor(){
-        Object.seal(this.playerPosition); // Restricts the adding of new elements
         // TODO: Setup the seed with Math.Random()
-        let int32_min = 1 << 31;
-        let int32_max = Math.pow(2, 31) - 1;
-
+        let totMin = -100000000;
+        let totMax = 100000000;
 
         // TODO: Set the seed value to the generated one
-        this.seed = getRandomRange(int32_min, int32_max, Math.random);
+        this.seed = getRandomRange(totMin, totMax, Math.random);
 
+        this.#randFunc = mulberry32(this.seed);
         // TODO: Add all the nodes to the maze array
-        this.#size = getRandomRange(15, 20, mulberry32(this.seed));
+        this.#size = getRandomRange(15, 20, this.#randFunc);
         let size = this.#size;
         this.#maze = Array.from({ length: size}, (_, y) => Array.from({ length: size}, (_, x) => new LogicNode([x, y])));
 
         console.log(this.#maze[size -1][size-1].position);
         // TODO: Pass to the generate maze function
         this.#generateGameObject();
+
+        Object.seal(this.playerPosition); // Restricts the adding of new elements
+
     }
 
     /**
@@ -95,13 +99,15 @@ export class LogicMaze{
         // TODO: Implement the recursive back tracking algorithm
         this.#generateMaze();
         // TODO: Random index into the wordList to get the word
+        this.#word = wordList[getRandomRange(0, wordList.length -1, this.#randFunc)];
         // TODO: Set the word visual list to the number of letters
+        this.visualizedWord = Array.from({length: this.#word.length}, () => "");
     }
 
     #generateMaze(){
 
         // TODO: Use a local seed variable that you add to every time it is used to make it 
-        let rnd = mulberry32(this.seed);
+        let rnd = this.#randFunc;
         // actually seem random.
         let seed = this.seed;
         let currX = getRandomRange(0, this.#size -1, rnd);
