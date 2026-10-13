@@ -72,7 +72,7 @@ export class LogicMaze{
 
     #size;
 
-    #gameWon = false;
+    gameWon = false;
 
     #toBeVisualized = [];
 
@@ -262,6 +262,13 @@ export class LogicMaze{
         // TODO: If correct move the character to the right
         // TODO: If correct set gameNotWon to false
         // TODO: If correct return true, otherwise return false
+        if(isGuessImminent()){
+            if(wordGuess === this.#word){
+                this.gameWon = true;
+            }
+        }
+
+        return false;
     }
 
     /**
