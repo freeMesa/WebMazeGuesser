@@ -34,8 +34,8 @@ export class LogicNode {
     }
 
     reset(){
-        for(const dir in walls){
-            dir = true;
+        for(const dir in this.walls){
+            this.walls[dir] = true;
         }
 
         this.letter = "";
@@ -185,11 +185,11 @@ export class LogicMaze{
     move(direction){ // Pass in boolean values always
         
         // TODO: Check if the move is valid or not
-        let [dx, dy] = directions[direction]["shift"];
+        let [dx, dy] = LogicMaze.directions[direction]["shift"];
         
         let [nx, ny] = [this.playerPosition[0] + dx, this.playerPosition[1] + dy];
 
-        checkInBounds = (nx >= 0 && nx < this.#size) && (ny >= 0 && ny < this.#size);
+        let checkInBounds = (nx >= 0 && nx < this.#size) && (ny >= 0 && ny < this.#size);
 
         let validMove = false;
         if(checkInBounds && this.#steps === 0){
@@ -246,8 +246,8 @@ export class LogicMaze{
                 
                 let [dx, dy] = dir["shift"];
 
-                dx += this.playerPosition[0];
-                dy += this.playerPosition[1];
+                dx += currNode.position[0];
+                dy += currNode.position[1];
 
                 let newNode = this.#maze[dy][dx];
                 this.#stageNodesForVisualization(newNode, dist + 1);
@@ -280,10 +280,11 @@ export class LogicMaze{
         // TODO: If correct move the character to the right
         // TODO: If correct set gameNotWon to false
         // TODO: If correct return true, otherwise return false
-        if(isGuessImminent()){
+        if(this.isGuessImminent()){
             if(wordGuess === this.#word){
                 this.gameWon = true;
             }
+            return true;
         }
 
         return false;
@@ -298,8 +299,26 @@ export class LogicMaze{
         // TODO: Clear the word list and set the string to empty
         // TODO: Use general random numbers to create the seed, and then pass it to the generate Maze Function
         // TODO: If seed isn't null pass this into generate maze instead
+        let totMin = -100000000;
+        let totMax = 100000000;
+
+        this.seed = seed === null ? getRandomRange(totMin, totMax, Math.random) : seed;
+        this.#randFunc = mulberry32(this.seed);
+
+        this.#steps = 0;
+        this.gameWon = false;
+
+        this.#toBeVisualized = [];
+
+        this.#size = getRandomRange(15, 20, this.#randFunc);
+        let size = this.#size;
+        this.#maze = Array.from({ length: size}, (_, y) => Array.from({length: size}, (_, x) => new LogicNode([x, y])));
+
+        this.#generateGameObject();
     }
 }
 
 
 export const maze = new LogicMaze();
+maze.move("RIGHT");
+maze.reset();
